@@ -1,6 +1,7 @@
 package ziemansoft.ziemapp.watchex.pojo;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -9,6 +10,23 @@ import java.util.List;
 
 @Entity
 public class Movie {
+    public Movie(int uniqId, double popularity, int voteCount, boolean video, String posterPath, int id, boolean adult, String backdropPath, String originalLanguage, String originalTitle, String title, double voteAverage, String overview, String releaseDate) {
+        this.uniqId = uniqId;
+        this.popularity = popularity;
+        this.voteCount = voteCount;
+        this.video = video;
+        this.posterPath = posterPath;
+        this.id = id;
+        this.adult = adult;
+        this.backdropPath = backdropPath;
+        this.originalLanguage = originalLanguage;
+        this.originalTitle = originalTitle;
+        this.title = title;
+        this.voteAverage = voteAverage;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+    }
+    @Ignore
     public Movie(double popularity, int voteCount, boolean video, String posterPath, int id, boolean adult, String backdropPath, String originalLanguage, String originalTitle, String title, double voteAverage, String overview, String releaseDate) {
         this.popularity = popularity;
         this.voteCount = voteCount;
@@ -25,6 +43,8 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
+    @PrimaryKey(autoGenerate = true)
+    private int uniqId;
     @SerializedName("popularity")
     @Expose
     private double popularity;
@@ -37,7 +57,6 @@ public class Movie {
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
-    @PrimaryKey
     @SerializedName("id")
     @Expose
     private int id;
@@ -181,4 +200,11 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
+    public int getUniqId() {
+        return uniqId;
+    }
+
+    public void setUniqId(int uniqId) {
+        this.uniqId = uniqId;
+    }
 }

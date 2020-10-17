@@ -13,9 +13,10 @@ import ziemansoft.ziemapp.watchex.pojo.ResultsResponse;
 public interface MovieFactoryService {
     @GET("3/discover/movie")
     Observable<ResultsResponse> getResultsResponse(@Query("api_key") String API_KEY,
-                                                         @Query("language") String LANG,
-                                                         @Query("sort_by") String SORT_BY,
-                                                         @Query("page") int page);
+                                                   @Query("language") String LANG,
+                                                   @Query("sort_by") String SORT_BY,
+                                                   @Query("vote_count.gte") int voteCount,
+                                                   @Query("page") int page);
 
     @GET("3/movie/{movie_id}/videos")
     Observable<GetTrailer> getTrailers(@Path("movie_id") int id,

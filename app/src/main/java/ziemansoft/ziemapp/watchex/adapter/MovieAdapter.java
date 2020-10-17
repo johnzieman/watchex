@@ -23,6 +23,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private static final String BIG_SIZE = "w780";
     private List<Movie> movies = new ArrayList<>();
     private OnPosterClickListener onPosterClickListener;
+    private OnGetEndListener getEndListener;
 
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
@@ -33,12 +34,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return movies;
     }
 
-    public interface OnPosterClickListener{
+    public interface OnGetEndListener {
+        void getEndListener();
+    }
+
+    public interface OnPosterClickListener {
         void onPosterClick(int i);
     }
 
     public void setOnPosterClickListener(OnPosterClickListener onPosterClickListener) {
         this.onPosterClickListener = onPosterClickListener;
+    }
+
+    public void setGetEndListener(OnGetEndListener getEndListener) {
+        this.getEndListener = getEndListener;
+    }
+
+    public void clearAdapter() {
+        this.movies.clear();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -52,6 +66,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         Movie movie = movies.get(position);
         Picasso.get().load(getImageLink(SMALL_SIZE) + movie.getPosterPath()).into(holder.imageViewSmallPoster);
+        if (movies.size() >= 20 && position == movies.size() - 2 && getEndListener != null) {
+            getEndListener.getEndListener();
+        }
     }
 
     @Override
@@ -68,7 +85,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(onPosterClickListener!=null){
+                    if (onPosterClickListener != null) {
                         onPosterClickListener.onPosterClick(getAdapterPosition());
                     }
                 }

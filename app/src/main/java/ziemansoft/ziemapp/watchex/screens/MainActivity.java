@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,11 @@ import java.util.List;
 import ziemansoft.ziemapp.watchex.R;
 import ziemansoft.ziemapp.watchex.adapter.HorizontalMenu;
 import ziemansoft.ziemapp.watchex.adapter.MovieAdapter;
+import ziemansoft.ziemapp.watchex.model.GetMovieAdapter;
 import ziemansoft.ziemapp.watchex.model.MovieViewModel;
 import ziemansoft.ziemapp.watchex.pojo.Movie;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private static List<String> menus;
     private MovieViewModel viewModel;
     private RecyclerView recyclerView;
@@ -28,10 +30,14 @@ public class MainActivity extends AppCompatActivity {
     private MovieAdapter adapter;
     private HorizontalMenu menuAdapter;
     private List<Movie> movies;
+    private static int page = 1;
+    private int numb;
+    private static boolean isLoading = false;
 
     public static List<String> getMenus() {
         return menus;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +66,27 @@ public class MainActivity extends AppCompatActivity {
         menuAdapter.setMenus(menus);
         viewModel = new ViewModelProvider(this).get(MovieViewModel.class);
         viewModel.contextUser(this);
+
         Intent intent = getIntent();
         if (intent.hasExtra("popular")) {
-            int numb = intent.getIntExtra("popular", 0);
-            getData(numb);
+            numb = intent.getIntExtra("popular", 0);
+            switchBox(numb);
         } else if (intent.hasExtra("rated")) {
-            int numb = intent.getIntExtra("rated", 1);
-            getData(numb);
-        } else {
-            getData(0);
+            numb = intent.getIntExtra("rated", 1);
+            switchBox(numb);
         }
+        getData(0);
+
+
+        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(List<Movie> movies) {
+                if (page == 1) {
+                    adapter.setMovies(movies);
+                }
+            }
+        });
+
         menuAdapter.setItemClickListener(new HorizontalMenu.ItemClickListener() {
             @Override
             public void getClickedItem(int i) {
@@ -85,22 +102,46 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    public void getData(int i) {
-        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+        adapter.setGetEndListener(new MovieAdapter.OnGetEndListener() {
             @Override
-            public void onChanged(List<Movie> movies) {
-                adapter.setMovies(movies);
-//                menuAdapter.setMenus(movies);
+            public void getEndListener() {
+                if (!isLoading) {
+                    Toast.makeText(MainActivity.this, "End", Toast.LENGTH_LONG).show();
+                    getData(numb);
+                }
             }
         });
-        viewModel.loadData(i);
+    }
+
+
+    public void getData(int i) {
+        viewModel.loadData(i, page);
+        viewModel.setOnStartLoadingListener(new MovieViewModel.onStartLoadingListener() {
+            @Override
+            public void onStartLoading() {
+                isLoading = true;
+            }
+        });
+        viewModel.setOnFinishLoadingLisneter(new MovieViewModel.onFinishLoadingLisneter() {
+            @Override
+            public void onFinishLoading(List<Movie> movies) {
+                if (movies != null && !movies.isEmpty()) {
+                    if (page == 1) {
+                        adapter.clearAdapter();
+                        viewModel.deleteAllMovies();
+                    }
+                    viewModel.insertAllMovies(movies);
+                    adapter.setMovies(movies);
+                    ++page;
+                }
+                isLoading = false;
+            }
+        });
     }
 
 
     public void switchBox(int num) {
-
+        page = 1;
         switch (num) {
             case 0:
             case 1:

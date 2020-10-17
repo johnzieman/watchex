@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -20,10 +22,12 @@ import io.reactivex.disposables.Disposable;
 import ziemansoft.ziemapp.watchex.R;
 import ziemansoft.ziemapp.watchex.adapter.TrailerAdapters;
 import ziemansoft.ziemapp.watchex.model.MovieViewModel;
+import ziemansoft.ziemapp.watchex.model.TrailerPresenterModel;
+import ziemansoft.ziemapp.watchex.model.TrailersSettingModel;
 import ziemansoft.ziemapp.watchex.pojo.Movie;
 import ziemansoft.ziemapp.watchex.pojo.MovieTrailer;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailersSettingModel {
     private ImageView imageView;
     private TextView title;
     private TextView releaseDate;
@@ -37,10 +41,19 @@ public class DetailActivity extends AppCompatActivity {
     private Disposable disposable;
 
     private static final String BASE_URL = "https://image.tmdb.org/t/p/";
+    private static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
     private static final String SMALL_SIZE = "w185";
     private static final String BIG_SIZE = "w780";
 
     private MovieViewModel viewModel;
+    private TrailerPresenterModel presenterModel;
+
+    @Override
+    public void show(List<MovieTrailer> trailers) {
+        adapters.setTrailers(trailers);
+    }
+
+
     private int id;
 
     @Override
@@ -77,6 +90,14 @@ public class DetailActivity extends AppCompatActivity {
         checkStatus();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapters);
+        presenterModel = new TrailerPresenterModel(this);
+        presenterModel.getMovieTrailers(id);
+        adapters.setItemTouchListener(new TrailerAdapters.ItemTouchListener() {
+            @Override
+            public void itemTouch(String link) {
+                openLink(link);
+            }
+        });
     }
 
 
@@ -98,6 +119,9 @@ public class DetailActivity extends AppCompatActivity {
         this.traiers = traiers;
     }
 
-    public void openLink(View view) {
+
+    public void openLink(String link) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL+ link));
+        startActivity(intent);
     }
 }

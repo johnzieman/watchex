@@ -17,6 +17,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import ziemansoft.ziemapp.watchex.adapter.MovieAdapter;
+import ziemansoft.ziemapp.watchex.adapter.TrailerAdapters;
 import ziemansoft.ziemapp.watchex.dataFactory.MovieDownloadFactory;
 import ziemansoft.ziemapp.watchex.dataFactory.MovieFactoryService;
 import ziemansoft.ziemapp.watchex.database.MoviesDatabase;
@@ -31,6 +33,9 @@ public class MovieViewModel extends ViewModel {
     private static final String LANGUAGE = "en-US";
     private static final String POPULARITY = "popularity.desc";
     private static final String RATED = "vote_average.desc";
+    private static final int VOTES = 1000;
+    private GetMovieAdapter movieAdapter;
+
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Disposable disposable;
@@ -42,6 +47,7 @@ public class MovieViewModel extends ViewModel {
         movies = database.movieDao().getAllMovies();
         likedMovies = database.movieDao().getLikedMovies();
     }
+
 
     private LiveData<List<Movie>> movies;
     private LiveData<List<LikedMovie>> likedMovies;
@@ -65,15 +71,15 @@ public class MovieViewModel extends ViewModel {
     }
 
     @SuppressWarnings("unchecked")
-    private void insertAllMovies(List<Movie> movies) {
-        new InsertMovies().execute(movies);
+    public void insertAllMovies(List<Movie> movies) {
+        new InsertMovie().execute(movies);
     }
 
     private void insertLikedMovie(LikedMovie likedMovie) {
         new InsertLikedMovie().execute(likedMovie);
     }
 
-    private void deleteAllMovies() {
+    public void deleteAllMovies() {
         new DeleteMovies().execute();
     }
 
@@ -101,18 +107,6 @@ public class MovieViewModel extends ViewModel {
         return null;
     }
 
-
-    @SuppressLint("StaticFieldLeak")
-    private static class InsertMovies extends AsyncTask<List<Movie>, Void, Void> {
-        @SafeVarargs
-        @Override
-        protected final Void doInBackground(List<Movie>... lists) {
-            if (lists != null && lists.length > 0) {
-                database.movieDao().insertMovie(lists[0]);
-            }
-            return null;
-        }
-    }
 
 
     @SuppressLint("StaticFieldLeak")
@@ -148,8 +142,18 @@ public class MovieViewModel extends ViewModel {
         }
     }
 
+    public static class InsertMovie extends AsyncTask<List<Movie>, Void, Void>{
+        @Override
+        protected Void doInBackground(List<Movie>... movies) {
+            if(movies!=null && movies.length>0){
+                database.movieDao().insertMovie(movies[0]);
+            }
+            return null;
+        }
+    }
+
     @SuppressLint("StaticFieldLeak")
-    private static class DeleteMovies extends AsyncTask<Void, Void, Void> {
+    public static class DeleteMovies extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             database.movieDao().deleteAllMovies();
@@ -168,24 +172,29 @@ public class MovieViewModel extends ViewModel {
         }
     }
 
-    public void loadData(int i) {
+    public void loadData(int i, int page) {
         String sortType = null;
         if (i == 0) {
             sortType = POPULARITY;
         } else if (i == 1) {
             sortType = RATED;
         }
+        if(onStartLoadingListener!=null){
+            onStartLoadingListener.onStartLoading();
+        }
         MovieDownloadFactory movieDownloadFactory = MovieDownloadFactory.getMovieDownloadFactory();
         MovieFactoryService movieFactoryService = movieDownloadFactory.getMovieFactoryService();
-        disposable = movieFactoryService.getResultsResponse(API_KEY, LANGUAGE, sortType, 1)
+
+        disposable = movieFactoryService.getResultsResponse(API_KEY, LANGUAGE, sortType, VOTES, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<ResultsResponse>() {
                     @Override
                     public void accept(ResultsResponse resultsResponses) throws Exception {
                         if (resultsResponses != null) {
-                            deleteAllMovies();
-                            insertAllMovies(resultsResponses.getMovies());
+                            if(onFinishLoadingLisneter!=null){
+                                onFinishLoadingLisneter.onFinishLoading(resultsResponses.getMovies());
+                            }
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -197,29 +206,24 @@ public class MovieViewModel extends ViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void getMovieTrailers(int id) {
-        MovieDownloadFactory movieDownloadFactory = MovieDownloadFactory.getMovieDownloadFactory();
-        MovieFactoryService movieFactoryService = movieDownloadFactory.getMovieFactoryService();
-        disposable = movieFactoryService.getTrailers(id, API_KEY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<GetTrailer>() {
-                    @Override
-                    public void accept(GetTrailer getTrailer) throws Exception {
-                        if (getTrailer != null) {
-                            
-                            Log.i("Results", getTrailer.getResults().toString());
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Log.i("WrongMessage", Objects.requireNonNull(throwable.getMessage()));
-                    }
-                });
-        compositeDisposable.add(disposable);
+    private onStartLoadingListener onStartLoadingListener;
+    private onFinishLoadingLisneter onFinishLoadingLisneter;
+
+    public void setOnFinishLoadingLisneter(MovieViewModel.onFinishLoadingLisneter onFinishLoadingLisneter) {
+        this.onFinishLoadingLisneter = onFinishLoadingLisneter;
     }
 
+    public void setOnStartLoadingListener(MovieViewModel.onStartLoadingListener onStartLoadingListener) {
+        this.onStartLoadingListener = onStartLoadingListener;
+    }
+
+    public interface onStartLoadingListener {
+        void onStartLoading();
+    }
+
+    public interface onFinishLoadingLisneter {
+        void onFinishLoading(List<Movie> movies);
+    }
 
     public void setLikedMovieStatus(int i) {
         likedMovie = getLikedMovie(i);

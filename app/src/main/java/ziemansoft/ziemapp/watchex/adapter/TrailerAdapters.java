@@ -16,9 +16,15 @@ import ziemansoft.ziemapp.watchex.pojo.MovieTrailer;
 
 public class TrailerAdapters extends RecyclerView.Adapter<TrailerAdapters.TrailerViewHolder>{
     private List<MovieTrailer> trailers;
+    private ItemTouchListener itemTouchListener;
+    private MovieTrailer trailer;
 
     public TrailerAdapters(){
         trailers = new ArrayList<>();
+    }
+
+    public interface ItemTouchListener{
+        void itemTouch(String link);
     }
 
     public void setTrailers(List<MovieTrailer> trailers) {
@@ -26,9 +32,19 @@ public class TrailerAdapters extends RecyclerView.Adapter<TrailerAdapters.Traile
         notifyDataSetChanged();
     }
 
+    public ItemTouchListener getItemTouchListener() {
+        return itemTouchListener;
+    }
+
+    public void setItemTouchListener(ItemTouchListener itemTouchListener) {
+        this.itemTouchListener = itemTouchListener;
+    }
+
     public List<MovieTrailer> getTrailers() {
         return trailers;
     }
+
+
 
     @NonNull
     @Override
@@ -39,7 +55,7 @@ public class TrailerAdapters extends RecyclerView.Adapter<TrailerAdapters.Traile
 
     @Override
     public void onBindViewHolder(@NonNull TrailerViewHolder holder, int position) {
-        MovieTrailer trailer = trailers.get(position);
+        trailer = trailers.get(position);
         holder.textView.setText(trailer.getName());
     }
 
@@ -48,11 +64,19 @@ public class TrailerAdapters extends RecyclerView.Adapter<TrailerAdapters.Traile
         return trailers.size();
     }
 
-    static class TrailerViewHolder extends RecyclerView.ViewHolder{
+    class TrailerViewHolder extends RecyclerView.ViewHolder{
         private TextView textView;
         public TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textViewName);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(itemTouchListener!=null){
+                        itemTouchListener.itemTouch(trailers.get(getAdapterPosition()).getKey());
+                    }
+                }
+            });
         }
     }
 }

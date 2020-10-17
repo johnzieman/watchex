@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import ziemansoft.ziemapp.watchex.pojo.LikedMovie;
 import ziemansoft.ziemapp.watchex.pojo.Movie;
 
-@Database(entities = {Movie.class, LikedMovie.class}, version = 2, exportSchema = false)
+@Database(entities = {Movie.class, LikedMovie.class}, version = 3, exportSchema = false)
 public abstract class MoviesDatabase extends RoomDatabase {
     private static MoviesDatabase database;
     private static final Object LOCK = new Object();
