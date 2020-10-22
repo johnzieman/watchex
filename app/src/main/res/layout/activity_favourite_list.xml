@@ -26,7 +26,7 @@
         android:background="@color/colorBlack"
         android:fontFamily="@font/montserrat_bold"
         android:padding="10dp"
-        android:text="watchex"
+        android:text="@string/watchex"
         android:textColor="@color/colorGreen"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"

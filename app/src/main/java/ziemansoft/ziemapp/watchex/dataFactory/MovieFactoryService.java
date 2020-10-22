@@ -20,5 +20,6 @@ public interface MovieFactoryService {
 
     @GET("3/movie/{movie_id}/videos")
     Observable<GetTrailer> getTrailers(@Path("movie_id") int id,
+                                       @Query("language") String LANG,
                                        @Query("api_key") String API_KEY);
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Watchex</string>
+    <string name="recommendations">Tavsiyalar</string>
+    <string name="favourite">Sevimli ro\'yxat</string>
+    <string name="reted">Eng yuqori baholi</string>
+    <string name="popular">Hozir mashhur</string>
+    <string name="watchex">watchex</string>
+    <string name="big_poster">big poster</string>
+    <string name="like">like</string>
+    <string name="release_date">Ishlab chiqarilish sanasi:</string>
+    <string name="vote_average">O\'rtacha ovoz berish:</string>
+</resources>

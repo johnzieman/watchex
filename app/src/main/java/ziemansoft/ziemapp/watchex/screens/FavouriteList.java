@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,10 @@ public class FavouriteList extends AppCompatActivity {
 
         horizontalMenu = new HorizontalMenu();
         adapter = new MovieAdapter();
-        menuList =MainActivity.getMenus();
+        menuList = MainActivity.getMenus();
         recyclerViewMenu = findViewById(R.id.recyclerViewHorizontal);
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, getDisplayMetrics()));
         recyclerViewMenu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         horizontalMenu.setMenus(menuList);
         recyclerView.setAdapter(adapter);
@@ -52,7 +53,7 @@ public class FavouriteList extends AppCompatActivity {
         horizontalMenu.setItemClickListener(new HorizontalMenu.ItemClickListener() {
             @Override
             public void getClickedItem(int i) {
-                switch (i){
+                switch (i) {
                     case 0:
                         Intent popular = new Intent(FavouriteList.this, MainActivity.class);
                         popular.putExtra("popular", i);
@@ -85,11 +86,18 @@ public class FavouriteList extends AppCompatActivity {
         viewModel.getLikedMovies().observe(this, new Observer<List<LikedMovie>>() {
             @Override
             public void onChanged(List<LikedMovie> likedMovies) {
-                if(likedMovies!=null) {
+                if (likedMovies != null) {
                     List<Movie> movies = new ArrayList<>(likedMovies);
                     adapter.setMovies(movies);
                 }
             }
         });
+    }
+
+    private int getDisplayMetrics() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int width = (int) (metrics.widthPixels / metrics.density);
+        return Math.max(width / 185, 2);
     }
 }

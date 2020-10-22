@@ -6,17 +6,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.disposables.Disposable;
 import ziemansoft.ziemapp.watchex.R;
@@ -55,6 +58,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersSetting
 
 
     private int id;
+    private String lang;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersSetting
         if (actionBar != null) {
             actionBar.hide();
         }
+        lang = Locale.getDefault().getLanguage();
         Intent intent = getIntent();
         if (intent.hasExtra("movieId")) {
             id = intent.getIntExtra("movieId", -1);
@@ -84,20 +89,21 @@ public class DetailActivity extends AppCompatActivity implements TrailersSetting
         Movie movie = viewModel.getMovie(id);
         Picasso.get().load(BASE_URL + BIG_SIZE + movie.getPosterPath()).into(imageView);
         title.setText(movie.getTitle());
-        releaseDate.setText("Release date: " + movie.getReleaseDate());
-        vote_average.setText("Vote average: " + movie.getVoteAverage());
+        releaseDate.setText(String.format("%s " + "%s",getString(R.string.release_date), movie.getReleaseDate()));
+        vote_average.setText(String.format("%s " + "%s",getString(R.string.vote_average), movie.getVoteAverage()));
         description.setText(movie.getOverview());
         checkStatus();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapters);
         presenterModel = new TrailerPresenterModel(this);
-        presenterModel.getMovieTrailers(id);
+        presenterModel.getMovieTrailers(id, lang);
         adapters.setItemTouchListener(new TrailerAdapters.ItemTouchListener() {
             @Override
             public void itemTouch(String link) {
                 openLink(link);
             }
         });
+        recyclerView.scrollToPosition(0);
     }
 
 
@@ -121,7 +127,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersSetting
 
 
     public void openLink(String link) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL+ link));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + link));
         startActivity(intent);
     }
 }

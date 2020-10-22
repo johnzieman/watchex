@@ -24,11 +24,11 @@ public class TrailerPresenterModel {
     }
 
 
-    public void getMovieTrailers(int id) {
+    public void getMovieTrailers(int id, String lang) {
         TrailerAdapters adapters = new TrailerAdapters();
         MovieDownloadFactory movieDownloadFactory = MovieDownloadFactory.getMovieDownloadFactory();
         MovieFactoryService movieFactoryService = movieDownloadFactory.getMovieFactoryService();
-        disposable = movieFactoryService.getTrailers(id, API_KEY)
+        disposable = movieFactoryService.getTrailers(id, lang, API_KEY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<GetTrailer>() {

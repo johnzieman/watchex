@@ -19,7 +19,6 @@
             android:fontFamily="@font/montserrat_bold"
             android:padding="8dp"
             android:textColor="@color/colorWhite"
-            android:text="TextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

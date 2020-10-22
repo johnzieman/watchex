@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Watchex</string>
+    <string name="vote_average">Vote average:</string>
+    <string name="release_date">Release date:</string>
+    <string name="like">like</string>
+    <string name="big_poster">big poster</string>
+    <string name="watchex">watchex</string>
+    <string name="popular">Popular now</string>
+    <string name="reted">Top rated</string>
+    <string name="favourite">Favourite list</string>
+    <string name="recommendations">Recommendations</string>
 </resources>

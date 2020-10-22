@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,51 +10,48 @@
     tools:context=".screens.DetailActivity">
 
 
+    <ImageView
+        android:id="@+id/bigPoster"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:translationZ="20dp"
+        android:src="@drawable/heart_off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/big_poster" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#F0F0F0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bigPoster"
+        app:layout_constraintTop_toTopOf="parent">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#F0F0F0">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewTrailers"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:translationY="-30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView2" />
-
-        <ImageView
-            android:id="@+id/bigPoster"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:translationZ="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/big_poster" />
-
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:translationZ="60dp"
-            app:cardCornerRadius="35dp"
             android:layout_margin="20dp"
-            android:padding="10dp"
             android:onClick="changeStatus"
+            android:padding="10dp"
+            android:translationZ="60dp"
+            android:translationY="30dp"
+            app:cardCornerRadius="35dp"
             app:layout_constraintBottom_toTopOf="@+id/cardView2"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cardView2">
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -66,15 +65,15 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView2"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:translationY="-50dp"
             android:translationZ="30dp"
             app:cardCornerRadius="10dp"
+            android:translationY="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bigPoster">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,6 +89,7 @@
                     android:layout_marginTop="35dp"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/montserrat_bold"
+                    android:text=""
                     android:textSize="20sp" />
 
                 <TextView
@@ -118,9 +118,15 @@
                     android:padding="10dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewTrailers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardView2" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>

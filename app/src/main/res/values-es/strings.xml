@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Watchex</string>
+    <string name="like">like</string>
+    <string name="big_poster">big poster</string>
+    <string name="watchex">watchex</string>
+    <string name="vote_average">Promedio de votos:</string>
+    <string name="release_date">Fecha de lanzamiento:</string>
+    <string name="popular">Popular ahora</string>
+    <string name="reted">Los más valorados</string>
+    <string name="favourite">Lista de favoritos</string>
+    <string name="recommendations">Recomendaciones</string>
+</resources>

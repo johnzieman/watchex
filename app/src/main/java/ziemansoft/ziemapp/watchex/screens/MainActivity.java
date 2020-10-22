@@ -1,5 +1,6 @@
 package ziemansoft.ziemapp.watchex.screens;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -10,19 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import ziemansoft.ziemapp.watchex.R;
 import ziemansoft.ziemapp.watchex.adapter.HorizontalMenu;
 import ziemansoft.ziemapp.watchex.adapter.MovieAdapter;
+import ziemansoft.ziemapp.watchex.model.EndlessRecyclerOnScrollListener;
 import ziemansoft.ziemapp.watchex.model.GetMovieAdapter;
 import ziemansoft.ziemapp.watchex.model.MovieViewModel;
 import ziemansoft.ziemapp.watchex.pojo.Movie;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private static List<String> menus;
     private MovieViewModel viewModel;
     private RecyclerView recyclerView;
@@ -33,6 +40,9 @@ public class MainActivity extends AppCompatActivity{
     private static int page = 1;
     private int numb;
     private static boolean isLoading = false;
+    private int currentItems, totalItems, scrolledItems;
+    private static String lang;
+    private GridLayoutManager manager;
 
     public static List<String> getMenus() {
         return menus;
@@ -47,22 +57,24 @@ public class MainActivity extends AppCompatActivity{
         if (actionBar != null) {
             actionBar.hide();
         }
+        manager = new GridLayoutManager(this, getColumnCount());
+        lang = Locale.getDefault().getLanguage();
         recyclerView = findViewById(R.id.recyclerView);
         recyclerViewMenu = findViewById(R.id.recyclerViewHorizontal);
         adapter = new MovieAdapter();
         menuAdapter = new HorizontalMenu();
         recyclerViewMenu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(manager);
         movies = new ArrayList<>();
         menus = new ArrayList<>();
         adapter.setMovies(movies);
         menuAdapter.setMenus(menus);
         recyclerViewMenu.setAdapter(menuAdapter);
         recyclerView.setAdapter(adapter);
-        menus.add("Popular now");
-        menus.add("Top rated");
-        menus.add("Favourite list");
-        menus.add("Select genre");
+        menus.add(getString(R.string.popular));
+        menus.add(getString(R.string.reted));
+        menus.add(getString(R.string.favourite));
+        menus.add(getString(R.string.recommendations));
         menuAdapter.setMenus(menus);
         viewModel = new ViewModelProvider(this).get(MovieViewModel.class);
         viewModel.contextUser(this);
@@ -81,9 +93,7 @@ public class MainActivity extends AppCompatActivity{
         viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(List<Movie> movies) {
-                if (page == 1) {
-                    adapter.setMovies(movies);
-                }
+                adapter.setMovies(movies);
             }
         });
 
@@ -93,6 +103,14 @@ public class MainActivity extends AppCompatActivity{
                 switchBox(i);
             }
         });
+
+        adapter.setGetEndListener(new MovieAdapter.OnGetEndListener() {
+            @Override
+            public void getEndListener() {
+                getData(numb);
+            }
+        });
+
         adapter.setOnPosterClickListener(new MovieAdapter.OnPosterClickListener() {
             @Override
             public void onPosterClick(int i) {
@@ -102,26 +120,9 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
-        adapter.setGetEndListener(new MovieAdapter.OnGetEndListener() {
-            @Override
-            public void getEndListener() {
-                if (!isLoading) {
-                    Toast.makeText(MainActivity.this, "End", Toast.LENGTH_LONG).show();
-                    getData(numb);
-                }
-            }
-        });
     }
-
-
     public void getData(int i) {
-        viewModel.loadData(i, page);
-        viewModel.setOnStartLoadingListener(new MovieViewModel.onStartLoadingListener() {
-            @Override
-            public void onStartLoading() {
-                isLoading = true;
-            }
-        });
+        viewModel.loadData(i, lang, page);
         viewModel.setOnFinishLoadingLisneter(new MovieViewModel.onFinishLoadingLisneter() {
             @Override
             public void onFinishLoading(List<Movie> movies) {
@@ -131,15 +132,12 @@ public class MainActivity extends AppCompatActivity{
                         viewModel.deleteAllMovies();
                     }
                     viewModel.insertAllMovies(movies);
-                    adapter.setMovies(movies);
-                    ++page;
                 }
-                isLoading = false;
+                page++;
             }
         });
     }
-
-
+    
     public void switchBox(int num) {
         page = 1;
         switch (num) {
@@ -157,5 +155,12 @@ public class MainActivity extends AppCompatActivity{
                 getData(0);
                 break;
         }
+    }
+
+    public int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int width = (int) (metrics.widthPixels / metrics.density);
+        return Math.max(width / 185, 2);
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Watchex</string>
+    <string name="like">like</string>
+    <string name="big_poster">big poster</string>
+    <string name="watchex">watchex</string>
+    <string name="vote_average">투표 평균 :</string>
+    <string name="release_date">출시일:</string>
+    <string name="popular">지금 인기</string>
+    <string name="reted">최고 등급</string>
+    <string name="favourite">즐겨 찾는 목록</string>
+    <string name="recommendations">권장 사항</string>
+</resources>
