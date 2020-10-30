@@ -24,6 +24,6 @@ disposable = movieFactoryService.getResultsResponse(API_KEY, lang, sortType, VOT
 public void accept(ResultsResponse resultsResponses) throws Exception { if (resultsResponses != null) { if(onFinishLoadingLisneter!=null){ onFinishLoadingLisneter.onFinishLoading(resultsResponses.getMovies());
 } } }}, new Consumer<Throwable>() {@Override public void accept(Throwable throwable) throws Exception { Log.i("WrongMessage", Objects.requireNonNull(throwable.getMessage()));
 }});compositeDisposable.add(disposable); }private onFinishLoadingLisneter onFinishLoadingLisneter;public void setOnFinishLoadingLisneter(MovieViewModel.onFinishLoadingLisneter onFinishLoadingLisneter) { this.onFinishLoadingLisneter = onFinishLoadingLisneter;
-}public interface onFinishLoadingLisneter { void onFinishLoading(List<Movie> movies);}public void setLikedMovieStatus(int i) { likedMovie = getLikedMovie(i);Movie movie = getMovie(i);
+}public interface onFinishLoadingLisneter { void onFinishLoading(List<Movie> movies);}public void setLikedMovieStatus(int i){ likedMovie = getLikedMovie(i);Movie movie = getMovie(i);
 if (likedMovie == null) { insertLikedMovie(new LikedMovie(movie)); } else { deleteLikedMovie(likedMovie); } }public Boolean checkLikedMovie(int i) { boolean mBoolean = false;likedMovie = getLikedMovie(i);
-if (likedMovie == null) { return mBoolean; } else { mBoolean = true; }return mBoolean; }@Override protected void onCleared() { if (compositeDisposable != null) { compositeDisposable.dispose(); }super.onCleared(); }}
+if (likedMovie == null) { return mBoolean; } else { mBoolean = true; }return mBoolean; }@Override protected void onCleared(){ if (compositeDisposable != null) { compositeDisposable.dispose(); }super.onCleared(); }}
